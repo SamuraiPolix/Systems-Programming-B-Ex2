@@ -27,7 +27,7 @@ namespace ariel {
         this->cycles = false;
     }
 
-    void Graph::printGraph() const {
+    string Graph::printGraph() const {
         size_t vertices = 0;
         size_t edges = 0;
         
@@ -41,10 +41,11 @@ namespace ariel {
         //     }
         //     cout << endl;       // line drop
         // }
-        cout << this->printMatrix();
+
+        return this->printMatrix();
 
         // Print stats
-        cout << "Graph with " << vertices << " vertices and " << edges << " edges." << endl;        
+        // cout << "Graph with " << vertices << " vertices and " << edges << " edges." << endl;        
     }
 
     string Graph::printMatrix() const{
@@ -53,17 +54,17 @@ namespace ariel {
             result.append("[");
             for (size_t j = 0; j < adjMatrix[i].size(); ++j) {
                 result.append(to_string(adjMatrix[i][j]));       // print element
-                result.append(",");
                 if (j < adjMatrix[i].size()-1){
-                    result.append(" ");     // space if not last element in row
+                    result.append(", ");    // space and comma if not last element in row
                 }
             }
             result.append("]");
             if (i < adjMatrix.size()-1){
-                    result.append(", ");     // space and comma if not last row
+                    // result.append(", ");     // space and comma if not last row
+                    result.append("\n");     // linedrop
                 }
         }
-        result.append("\n");
+        // result.append("\n");
         return result;
     }
 
@@ -131,6 +132,19 @@ namespace ariel {
         }
         return result;
     }
+    vector<vector<int>> Graph::matrixAddToEdges(int scalar) const{
+        // matrix to store the result
+        vector<vector<int>> result(adjMatrix.size(), vector<int>(adjMatrix.size(), 0));
+
+        for(size_t row = 0; row < adjMatrix.size(); row++){
+            for (size_t col = 0; col < adjMatrix[row].size(); col++){
+                if (this->adjMatrix[row][col] != 0){
+                    result[row][col] = this->adjMatrix[row][col] + scalar;
+                }
+            }
+        }
+        return result;
+    }
     vector<vector<int>> Graph::matrixSub(const vector<vector<int>>& other) const{
         // matrix to store the result
         vector<vector<int>> result(adjMatrix.size(), vector<int>(adjMatrix.size(), 0));
@@ -150,6 +164,20 @@ namespace ariel {
         for(size_t row = 0; row < adjMatrix.size(); row++){
             for (size_t col = 0; col < adjMatrix[row].size(); col++){
                 result[row][col] = this->adjMatrix[row][col] - scalar;
+            }
+        }
+        return result;
+    }
+
+    vector<vector<int>> Graph::matrixSubFromEdges(int scalar) const{
+        // matrix to store the result
+        vector<vector<int>> result(adjMatrix.size(), vector<int>(adjMatrix.size(), 0));
+
+        for(size_t row = 0; row < adjMatrix.size(); row++){
+            for (size_t col = 0; col < adjMatrix[row].size(); col++){
+                if(this->adjMatrix[row][col] != 0){
+                    result[row][col] = this->adjMatrix[row][col] - scalar;
+                }
             }
         }
         return result;
@@ -229,24 +257,24 @@ namespace ariel {
     // Operators
     // prefix
     Graph& Graph::operator++(){
-        this->matrixAdd(1);
+        this->loadGraph(this->matrixAddToEdges(1));
         return *this;
     }
     
     Graph& Graph::operator--(){
-        this->matrixSub(1);
+        this->loadGraph(this->matrixSubFromEdges(1));
         return *this;
     }
 
     // // postfix
     Graph Graph::operator++(int scalar){
-        Graph temp = *this;     // TODO understand why we do this
-        this->matrixAdd(1);
+        Graph temp = *this;     // we do this to return the original value before the operation
+        this->loadGraph(this->matrixAddToEdges(1));
         return temp;
     }
     Graph Graph::operator--(int){
-        Graph temp = *this;     // TODO understand why we do this
-        this->matrixSub(1);
+        Graph temp = *this;     // we do this to return the original value before the operation
+        this->loadGraph(this->matrixSubFromEdges(1));
         return temp;
     }
 
@@ -283,6 +311,13 @@ namespace ariel {
         this->loadGraph(this->matrixMul(right));
         return *this;
     }
+    Graph& Graph::operator/=(const Graph& right){
+        if (this->adjMatrix[0].size() != right.adjMatrix.size()){
+            throw invalid_argument(ERROR_UNMATCHING_ROWS_COLS);
+        }
+        this->loadGraph(this->matrixDiv(right.adjMatrix));
+        return *this;
+    }
     Graph& Graph::operator/=(const int right){
         this->loadGraph(this->matrixDiv(right));
         return *this;
@@ -306,7 +341,7 @@ namespace ariel {
         if (left.adjMatrix.size() != right.adjMatrix.size() || left.adjMatrix[0].size() != right.adjMatrix[0].size()){
             throw invalid_argument(GRAPHS_SIZES_NOT_MATCHED);
         }
-        return Graph(right.matrixSub(right.adjMatrix));
+        return Graph(left.matrixSub(right.adjMatrix));
     }
     Graph operator-(const Graph& left, int value){
         return Graph(left.matrixSub(value));
@@ -328,16 +363,16 @@ namespace ariel {
         return Graph(right.matrixMul(value));
     }
 
-    // Graph operator/(const Graph& left, const Graph& right){
-    //     if (left.adjMatrix[0].size() != right.adjMatrix.size()){
-    //         throw invalid_argument("Cannot operate on graphs with unmatching cols and rows!\n");
-    //     }
-    //     return Graph(left.matrixMul(right.adjMatrix));
-    // }
+    Graph operator/(const Graph& left, const Graph& right){
+        if (left.adjMatrix[0].size() != right.adjMatrix.size()){
+            throw invalid_argument(ERROR_UNMATCHING_ROWS_COLS);
+        }
+        return Graph(left.matrixDiv(right.adjMatrix));
+    }
     Graph operator/(const Graph& left, int value){
         return Graph(left.matrixDiv(value));
     }
-    Graph operator/(double value, const Graph& right){
+    Graph operator/(int value, const Graph& right){
         return Graph(right.matrixDiv(value));
     }
 
@@ -355,7 +390,7 @@ namespace ariel {
             return true;
         }
         // If neither graph is exactly contained in the other and the graphs are not equal
-        if (!other.isSubgraphOf(*this) && other!=(*this)){       // using our implemented !=
+        if (!other.isSubgraphOf(*this) && this->adjMatrix != other.adjMatrix){       // using our implemented !=
             size_t this_edges = this->countEdges();
             size_t other_edges = other.countEdges();
             // then graph G2 is greater than graph G1 if the number of edges in G2 is greater than the number of edges in G1.
@@ -379,7 +414,7 @@ namespace ariel {
             return true;
         }
         // If neither graph is exactly contained in the other and the graphs are not equal
-        if (!other.isSubgraphOf(*this) && other!=(*this)){       // using our implemented !=
+        if (!other.isSubgraphOf(*this) && this->adjMatrix != other.adjMatrix){       // using our implemented !=
             size_t this_edges = this->countEdges();
             size_t other_edges = other.countEdges();
             // then graph G2 is greater than graph G1 if the number of edges in G2 is greater than the number of edges in G1.
@@ -400,9 +435,6 @@ namespace ariel {
 
     // -stream operators-
     ostream& operator<<(ostream& out, const Graph& graph){
-        return (out << graph.printMatrix());
+        return (out << graph.printMatrix() << endl);
     }
-    // istream& Graph::operator>>(istream& in, Graph& graph){
-    //     return (out << graph.printMatrix());
-    // }
 }

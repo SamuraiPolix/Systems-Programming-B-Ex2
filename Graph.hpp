@@ -22,8 +22,10 @@ namespace ariel {
         // Helper functions for Graph operations - operations on adjMatrix
         vector<vector<int>> matrixAdd(const vector<vector<int>>&) const; 
         vector<vector<int>> matrixAdd(int) const;
+        vector<vector<int>> matrixAddToEdges(int) const;
         vector<vector<int>> matrixSub(const vector<vector<int>>&) const; 
         vector<vector<int>> matrixSub(int) const;
+        vector<vector<int>> matrixSubFromEdges(int) const;
         vector<vector<int>> matrixMul(const vector<vector<int>>&) const; 
         vector<vector<int>> matrixMul(int) const;
         vector<vector<int>> matrixDiv(const vector<vector<int>>&) const; 
@@ -49,7 +51,7 @@ namespace ariel {
             /*
              * Prints the adjMatrix and the number of verices and edges in the graph.
             */
-            void printGraph() const;
+            string printGraph() const;
 
             /*
              * Returns the size of the AdjMatrix of the graph.
@@ -78,6 +80,7 @@ namespace ariel {
             Graph& operator-=(const int);
             Graph& operator*=(const Graph&);
             Graph& operator*=(const int);
+            Graph& operator/=(const Graph&);
             Graph& operator/=(const int);
 
             // -comparison operators-
@@ -112,12 +115,11 @@ namespace ariel {
             friend Graph operator*(const Graph&, int);
             friend Graph operator*(double, const Graph&);
 
-            // friend Graph operator/(const Graph&, const Graph&);
+            friend Graph operator/(const Graph&, const Graph&);
             friend Graph operator/(const Graph&, int);
-            friend Graph operator/(double, const Graph&);
+            friend Graph operator/(int, const Graph&);
 
             // -stream operators-
             friend ostream& operator<<(ostream&, const Graph&);
-            // friend istream& operator>>(istream&, Graph&);
     };
 }
