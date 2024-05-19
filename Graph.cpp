@@ -6,10 +6,6 @@
 
 #include "Graph.hpp"
 
-#define ERROR_UNMATCHING_ROWS_COLS "The number of columns in the first matrix must be equal to the number of rows in the second matrix.\n"
-#define ERROR_NOT_SQUARE "The graph should be a square matrix!\n"
-#define GRAPHS_SIZES_NOT_MATCHED "Cannot operate on graphs of different sizes!\n"
-
 using namespace std;
 namespace ariel {
     // Constuctors:
@@ -49,7 +45,7 @@ namespace ariel {
     }
 
     string Graph::printMatrix() const{
-        string result = "";
+        string result;
         for (size_t i = 0; i < adjMatrix.size(); ++i) {
             result.append("[");
             for (size_t j = 0; j < adjMatrix[i].size(); ++j) {
@@ -333,7 +329,7 @@ namespace ariel {
     Graph operator+(const Graph& left, int value){
         return Graph(left.matrixAdd(value));
     }
-    Graph operator+(double value, const Graph& right){
+    Graph operator+(int value, const Graph& right){
         return Graph(right.matrixAdd(value));
     }
 
@@ -346,7 +342,7 @@ namespace ariel {
     Graph operator-(const Graph& left, int value){
         return Graph(left.matrixSub(value));
     }
-    Graph operator-(double value, const Graph& right){
+    Graph operator-(int value, const Graph& right){
         return Graph(right.matrixSub(value));
     }
 
@@ -359,7 +355,7 @@ namespace ariel {
     Graph operator*(const Graph& left, int value){
         return Graph(left.matrixMul(value));
     }
-    Graph operator*(double value, const Graph& right){
+    Graph operator*(int value, const Graph& right){
         return Graph(right.matrixMul(value));
     }
 
@@ -399,7 +395,7 @@ namespace ariel {
             }
             // If the number of edges is the same,
             // then the graph G2 is larger than the graph G1 if the representative matrix of G2 has a higher order of magnitude than G1.
-            else if(other_edges == this_edges || other.getSize() > this->getSize()){        // using our implemented ==
+            if(other_edges == this_edges || other.getSize() > this->getSize()){        // using our implemented ==
                 return true;
             }
         }
@@ -423,7 +419,7 @@ namespace ariel {
             }
             // If the number of edges is the same,
             // then the graph G2 is larger than the graph G1 if the representative matrix of G2 has a higher order of magnitude than G1.
-            else if(this_edges == other_edges || other.getSize() < this->getSize()){        // using our implemented ==
+            if(this_edges == other_edges || other.getSize() < this->getSize()){        // using our implemented ==
                 return true;
             }
         }
@@ -435,6 +431,7 @@ namespace ariel {
 
     // -stream operators-
     ostream& operator<<(ostream& out, const Graph& graph){
-        return (out << graph.printMatrix() << endl);
+        // double endl because Demo.cpp has 0
+        return (out << graph.printMatrix() << endl << endl);
     }
 }

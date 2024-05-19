@@ -8,6 +8,15 @@
 #include <vector>
 #include <iostream>
 
+// #define ERROR_UNMATCHING_ROWS_COLS "The number of columns in the first matrix must be equal to the number of rows in the second matrix.\n"
+// #define ERROR_NOT_SQUARE "The graph should be a square matrix!\n"
+// #define GRAPHS_SIZES_NOT_MATCHED "Cannot operate on graphs of different sizes!\n"
+
+// Recommended by tidy:
+constexpr const char* ERROR_UNMATCHING_ROWS_COLS = "The number of columns in the first matrix must be equal to the number of rows in the second matrix.\n";
+constexpr const char* ERROR_NOT_SQUARE = "The graph should be a square matrix!\n";
+constexpr const char* GRAPHS_SIZES_NOT_MATCHED = "Cannot operate on graphs of different sizes!\n";
+
 using namespace std;
 namespace ariel {
     class Graph{
@@ -105,15 +114,15 @@ namespace ariel {
             // *All set as friend to allow access to private members and methods
             friend Graph operator+(const Graph&, const Graph&);
             friend Graph operator+(const Graph&, int);
-            friend Graph operator+(double, const Graph&);
+            friend Graph operator+(int, const Graph&);
 
             friend Graph operator-(const Graph&, const Graph&);
             friend Graph operator-(const Graph&, int);
-            friend Graph operator-(double, const Graph&);
+            friend Graph operator-(int, const Graph&);
 
             friend Graph operator*(const Graph&, const Graph&);
             friend Graph operator*(const Graph&, int);
-            friend Graph operator*(double, const Graph&);
+            friend Graph operator*(int, const Graph&);
 
             friend Graph operator/(const Graph&, const Graph&);
             friend Graph operator/(const Graph&, int);

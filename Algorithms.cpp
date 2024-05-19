@@ -13,7 +13,7 @@
 
 using namespace std;
 namespace ariel{
-    bool Algorithms::isConnected(Graph graph) {
+    bool Algorithms::isConnected(Graph const &graph) {
         if (graph.getSize() <= 1) {
             return true;        // an empty/1 vertice graph is connected
         }
@@ -143,7 +143,7 @@ namespace ariel{
     }
 
 
-    int Algorithms::relaxEdges(Graph graph, vector<int>& distance, vector<size_t>& path){
+    int Algorithms::relaxEdges(Graph const &graph, vector<int>& distance, vector<size_t>& path){
         int countChanges = 0;
         for (size_t vertice = 0; vertice < graph.getSize(); ++vertice) {
             for (size_t neighbor = 0; neighbor < graph.getSize(); ++neighbor) {
@@ -159,7 +159,7 @@ namespace ariel{
         return countChanges;
     }
 
-    bool Algorithms::dfsVisit(Graph graph, size_t vertice, vector<bool>& visited, vector<size_t>& parent, vector<size_t>& cycle) {
+    bool Algorithms::dfsVisit(Graph const & graph, size_t vertice, vector<bool>& visited, vector<size_t>& parent, vector<size_t>& cycle) {
         visited[vertice] = true; // Mark the curr vertex as visited
 
         // Traverse all adjacent vertices of curr vertex
@@ -181,12 +181,12 @@ namespace ariel{
                     return true;
                 }
                 // If the vertex is not visited, recursively visit it
-                else {
+                // else { - removed after tidy
                     parent[neighbor] = vertice; // Set the parent of the vertex
                     if (dfsVisit(graph, neighbor, visited, parent, cycle)) {
                         return true;
                     }
-                }
+                // }
             }
         }
         return false; // No cycle found

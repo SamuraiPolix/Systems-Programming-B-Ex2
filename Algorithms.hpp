@@ -16,7 +16,7 @@ namespace ariel{
          * Gets a graph,
          * returns 1 if the graph is connected (otherwise returns 0).
          */
-        static bool isConnected(Graph);
+        static bool isConnected(Graph const &);
 
         /*
          * The function receives a graph, a start vertex and an end vertex.
@@ -61,14 +61,14 @@ namespace ariel{
          * Tries to realx all the edges one time and update the distance and path vectors.
          * Returns the number of relaxations performed.
          */
-        static int relaxEdges(Graph, vector<int>&, vector<size_t>&);
+        static int relaxEdges(Graph const &, vector<int>&, vector<size_t>&);
 
         /*
          * Gets a graph and a vertice, and runs a DFS visit on it.
          * Returns true if a cycle was found, false otherwise.
          * Updates visited and path vectors, allowing us to track the cycle.
          */
-        static bool dfsVisit(Graph, size_t, vector<bool>&, vector<size_t>&, vector<size_t>&);
+        static bool dfsVisit(Graph const &, size_t, vector<bool>&, vector<size_t>&, vector<size_t>&);
 
         /*
          * Gets a graph and a start vertice, and runs a BFS on it.

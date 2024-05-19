@@ -526,7 +526,7 @@ TEST_CASE("Test graph output operator (<<)")
 
     ostringstream oss;
     oss << g1;
-    CHECK(oss.str() == "[0, 1, 0]\n[1, 0, 1]\n[0, 1, 0]\n");
+    CHECK(oss.str() == "[0, 1, 0]\n[1, 0, 1]\n[0, 1, 0]\n\n");
 
     ariel::Graph g2;
     vector<vector<int>> graph2 = {
@@ -537,7 +537,7 @@ TEST_CASE("Test graph output operator (<<)")
 
     ostringstream oss2;
     oss2 << g2;
-    CHECK(oss2.str() == "[0, 2, 2]\n[2, 0, 3]\n[2, 3, 0]\n");
+    CHECK(oss2.str() == "[0, 2, 2]\n[2, 0, 3]\n[2, 3, 0]\n\n");
 
     ariel::Graph g3;
     vector<vector<int>> graph3 = {
@@ -547,7 +547,7 @@ TEST_CASE("Test graph output operator (<<)")
 
     ostringstream oss3;
     oss3 << g3;
-    CHECK(oss3.str() == "[1, 2]\n[2, 1]\n");
+    CHECK(oss3.str() == "[1, 2]\n[2, 1]\n\n");
 
     // Test an empty graph
     ariel::Graph g4;
@@ -556,7 +556,7 @@ TEST_CASE("Test graph output operator (<<)")
 
     ostringstream oss4;
     oss4 << g4;
-    CHECK(oss4.str() == "\n");
+    CHECK(oss4.str() == "\n\n");
 }
 
 // TESTS FOR ALGORITHMS - WHILE USING THE OPERATORS FROM ABOVE
