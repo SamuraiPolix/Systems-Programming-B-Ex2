@@ -1,4 +1,4 @@
-# Graph Algorithms - C++ Assignment #2
+# Operator Overloading & Graph Algorithms - C++ Assignment #2
 ## This is a follow-up assignment, Assignment #1 can be found [here](https://github.com/SamuraiPolix/CPP_EX1/).
 #### (Systems Programming B @ Ariel University)
 #### Author: Samuel Lazareanu (sam.lazareanu@gmail.com)
