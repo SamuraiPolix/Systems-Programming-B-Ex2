@@ -6,6 +6,10 @@
 
 #include "Graph.hpp"
 
+#define ERROR_UNMATCHING_ROWS_COLS "The number of columns in the first matrix must be equal to the number of rows in the second matrix.\n"
+#define ERROR_NOT_SQUARE "The graph should be a square matrix!\n"
+#define GRAPHS_SIZES_NOT_MATCHED "Cannot operate on graphs of different sizes!\n"
+
 using namespace std;
 namespace ariel {
     // Constuctors:
@@ -14,7 +18,7 @@ namespace ariel {
         // Check if the graph is square
         for (size_t i = 0; i < graph.size(); ++i) {
             if (graph[i].size() != graph.size()) {
-                throw invalid_argument("Invalid graph: The graph is not a square matrix.");
+                throw invalid_argument(ERROR_NOT_SQUARE);
             }
         }
         // Graph is a square - load it
@@ -46,16 +50,27 @@ namespace ariel {
     string Graph::printMatrix() const{
         string result = "";
         for (size_t i = 0; i < adjMatrix.size(); ++i) {
+            result.append("[");
             for (size_t j = 0; j < adjMatrix[i].size(); ++j) {
-                result += adjMatrix[i][j];       // print element
-                result += " ";
+                result.append(to_string(adjMatrix[i][j]));       // print element
+                result.append(",");
+                if (j < adjMatrix[i].size()-1){
+                    result.append(" ");     // space if not last element in row
+                }
             }
-            result += "\n";       // line drop
+            result.append("]");
+            if (i < adjMatrix.size()-1){
+                    result.append(", ");     // space and comma if not last row
+                }
         }
+        result.append("\n");
         return result;
     }
 
     size_t Graph::getSize() const{
+        if (adjMatrix.size() != adjMatrix[0].size()){
+            throw invalid_argument(ERROR_NOT_SQUARE);
+        }
         return adjMatrix.size();
     }
 
@@ -146,7 +161,7 @@ namespace ariel {
         for(size_t row = 0; row < adjMatrix.size(); row++){
             for (size_t col = 0; col < adjMatrix[row].size(); col++){
                 for (size_t ind = 0; ind < adjMatrix.size(); ind++) {
-                    result[row][col] += adjMatrix[row][ind] * adjMatrix[ind][col];
+                    result[row][col] += adjMatrix[row][ind] * other[ind][col];
                 }
             }
         }
@@ -163,6 +178,52 @@ namespace ariel {
             }
         }
         return result;
+    }
+
+    vector<vector<int>> Graph::matrixDiv(const vector<vector<int>>& other) const{
+        // matrix to store the result
+        vector<vector<int>> result(adjMatrix.size(), vector<int>(adjMatrix.size(), 0));
+
+        for(size_t row = 0; row < adjMatrix.size(); row++){
+            for (size_t col = 0; col < adjMatrix[row].size(); col++){
+                for (size_t ind = 0; ind < adjMatrix.size(); ind++) {
+                    result[row][col] += adjMatrix[row][ind] / adjMatrix[ind][col];
+                }
+            }
+        }
+        return result;
+    }
+
+    vector<vector<int>> Graph::matrixDiv(int scalar) const{
+        // matrix to store the result
+        vector<vector<int>> result(adjMatrix.size(), vector<int>(adjMatrix.size(), 0));
+
+        for(size_t row = 0; row < adjMatrix.size(); row++){
+            for (size_t col = 0; col < adjMatrix[row].size(); col++){
+                result[row][col] = this->adjMatrix[row][col] / scalar;
+            }
+        }
+        return result;
+    }
+
+    // Helper functions for comparison operators
+    bool Graph::isSubgraphOf(const Graph& graph) const{
+        // If 'this' graph is bigger - there are more vertices in 'this' graph so its no a subgraph of 'graph'
+        if (this->getSize() > graph.getSize()){
+            return false;
+        }
+
+        // Iterate over this graph and check the adjMatrixes match
+        size_t size = this->getSize();
+        for (size_t row = 0; row < size; row++){
+            for (size_t col = 0; col < size; col++){
+                if (this->getWeight(row, col) != graph.getWeight(row, col)){
+                    return false;
+                }
+            }
+        }
+
+        return true;        // vetices and edges match (if 'graph' is bigger than 'this' we don't care about the rest [outside of 'this' vetices])
     }
 
     // Operators
@@ -191,7 +252,7 @@ namespace ariel {
 
     Graph& Graph::operator+=(const Graph& right){
         if (this->adjMatrix.size() != right.adjMatrix.size() || this->adjMatrix[0].size() != right.adjMatrix[0].size()){
-            throw invalid_argument("Cannot operate on graphs of different sizes!\n");
+            throw invalid_argument(GRAPHS_SIZES_NOT_MATCHED);
         }
         this->loadGraph(this->matrixAdd(right.adjMatrix));
         return *this;
@@ -202,7 +263,7 @@ namespace ariel {
     }
     Graph& Graph::operator-=(const Graph& right){
         if (this->adjMatrix.size() != right.adjMatrix.size() || this->adjMatrix[0].size() != right.adjMatrix[0].size()){
-            throw invalid_argument("Cannot operate on graphs of different sizes!\n");
+            throw invalid_argument(GRAPHS_SIZES_NOT_MATCHED);
         }
         this->loadGraph(this->matrixSub(right.adjMatrix));
         return *this;
@@ -213,7 +274,7 @@ namespace ariel {
     }
     Graph& Graph::operator*=(const Graph& right){
         if (this->adjMatrix[0].size() != right.adjMatrix.size()){
-            throw invalid_argument("Cannot operate on graphs with unmatching cols and rows!\n");
+            throw invalid_argument(ERROR_UNMATCHING_ROWS_COLS);
         }
         this->loadGraph(this->matrixMul(right.adjMatrix));
         return *this;
@@ -223,14 +284,14 @@ namespace ariel {
         return *this;
     }
     Graph& Graph::operator/=(const int right){
-        this->loadGraph(this->matrixMul(1/right));
+        this->loadGraph(this->matrixDiv(right));
         return *this;
     }
 
     // -binary operators-
     Graph operator+(const Graph& left, const Graph& right){
         if (left.adjMatrix.size() != right.adjMatrix.size() || left.adjMatrix[0].size() != right.adjMatrix[0].size()){
-            throw invalid_argument("Cannot operate on graphs of different sizes!\n");
+            throw invalid_argument(GRAPHS_SIZES_NOT_MATCHED);
         }
         return Graph(left.matrixAdd(right.adjMatrix));
     }
@@ -243,7 +304,7 @@ namespace ariel {
 
     Graph operator-(const Graph& left, const Graph& right){
         if (left.adjMatrix.size() != right.adjMatrix.size() || left.adjMatrix[0].size() != right.adjMatrix[0].size()){
-            throw invalid_argument("Cannot operate on graphs of different sizes!\n");
+            throw invalid_argument(GRAPHS_SIZES_NOT_MATCHED);
         }
         return Graph(right.matrixSub(right.adjMatrix));
     }
@@ -256,7 +317,7 @@ namespace ariel {
 
     Graph operator*(const Graph& left, const Graph& right){
         if (left.adjMatrix[0].size() != right.adjMatrix.size()){
-            throw invalid_argument("Cannot operate on graphs with unmatching cols and rows!\n");
+            throw invalid_argument(ERROR_UNMATCHING_ROWS_COLS);
         }
         return Graph(left.matrixMul(right.adjMatrix));
     }
@@ -274,10 +335,10 @@ namespace ariel {
     //     return Graph(left.matrixMul(right.adjMatrix));
     // }
     Graph operator/(const Graph& left, int value){
-        return Graph(left.matrixMul(1/value));
+        return Graph(left.matrixDiv(value));
     }
     Graph operator/(double value, const Graph& right){
-        return Graph(right.matrixMul(1/value));
+        return Graph(right.matrixDiv(value));
     }
 
     // -comparison operators-

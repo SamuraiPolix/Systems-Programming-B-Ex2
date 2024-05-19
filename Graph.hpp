@@ -26,6 +26,8 @@ namespace ariel {
         vector<vector<int>> matrixSub(int) const;
         vector<vector<int>> matrixMul(const vector<vector<int>>&) const; 
         vector<vector<int>> matrixMul(int) const;
+        vector<vector<int>> matrixDiv(const vector<vector<int>>&) const; 
+        vector<vector<int>> matrixDiv(int) const;
 
         // Helper functions for comperison opertaions
         bool isSubgraphOf(const Graph&) const;
