@@ -1,3 +1,8 @@
+/* 
+ * ID:      53036281
+ * Email:   sam.lazareanu@gmail.com
+ * @author  Samuel Lazareanu
+*/
 #include "doctest.h"
 #include "Algorithms.hpp"
 #include "Graph.hpp"

@@ -1,5 +1,5 @@
 /*
- * Demo program for Exercise 3.
+ * Demo program for Exercise 2.
  * Author: Benjamin Saldman.
  */
 
