@@ -110,12 +110,14 @@ namespace ariel {
             bool operator>(const Graph& other) const;
             bool operator>=(const Graph& other) const;
 
-            // -binary operators-
+            // -binary and unary operators-
             // *All set as friend to allow access to private members and methods
+            Graph operator+() const;
             friend Graph operator+(const Graph&, const Graph&);
             friend Graph operator+(const Graph&, int);
             friend Graph operator+(int, const Graph&);
 
+            Graph operator-();
             friend Graph operator-(const Graph&, const Graph&);
             friend Graph operator-(const Graph&, int);
             friend Graph operator-(int, const Graph&);

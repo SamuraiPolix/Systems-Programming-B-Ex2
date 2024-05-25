@@ -319,7 +319,10 @@ namespace ariel {
         return *this;
     }
 
-    // -binary operators-
+    // -binary and unary operators-
+    Graph Graph::operator+() const{
+        return *this;
+    }
     Graph operator+(const Graph& left, const Graph& right){
         if (left.adjMatrix.size() != right.adjMatrix.size() || left.adjMatrix[0].size() != right.adjMatrix[0].size()){
             throw invalid_argument(GRAPHS_SIZES_NOT_MATCHED);
@@ -333,6 +336,9 @@ namespace ariel {
         return Graph(right.matrixAdd(value));
     }
 
+    Graph Graph::operator-(){
+        return Graph(this->matrixMul(-1));
+    }
     Graph operator-(const Graph& left, const Graph& right){
         if (left.adjMatrix.size() != right.adjMatrix.size() || left.adjMatrix[0].size() != right.adjMatrix[0].size()){
             throw invalid_argument(GRAPHS_SIZES_NOT_MATCHED);
